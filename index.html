@@ -6,6 +6,16 @@
         font-family: sans-serif;
       }
 
+      main {
+        display: flex;
+      }
+
+      div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
       ul {
         display: flex;
         list-style: none;
@@ -16,7 +26,7 @@
         margin: 1rem;
         padding: 1rem;
         border-radius: 4px;
-        width: 25%;
+        /* width: 25%; */
         text-align: center;
         background-color: rgb(17, 133, 129);
         color: white;
@@ -41,11 +51,14 @@
     <h1>Acme Express w / JSON</h1>
     <div id="root"></div>
     <script type="text/babel">
+      const Nav = () => {}
+
       class App extends React.Component {
         constructor() {
           super()
           this.state = {
             products: [],
+            companies: [],
             err: ''
           }
         }
@@ -53,7 +66,8 @@
         async componentDidMount() {
           try {
             const products = (await axios.get('/api/products')).data
-            this.setState({ products })
+            const companies = (await axios.get('/api/companies')).data
+            this.setState({ products, companies })
           } catch (ex) {
             const err = ex.response.data.message
             console.log(ex)
@@ -63,17 +77,34 @@
 
         render() {
           console.log('render', this.state)
-          const { products } = this.state
+          const { products, companies } = this.state
           return (
-            <ul>
-              {products.map(product => (
-                <li key={product.id}>
-                  <h5>{product.name}</h5>
-                  <p>{product.description}</p>
-                  <p>{product.suggestedPrice}</p>
-                </li>
-              ))}
-            </ul>
+            <main>
+              <div id="products">
+                <h3>Products</h3>
+                <ul id="productList">
+                  {products.map(product => (
+                    <li key={product.id}>
+                      <h5>{product.name}</h5>
+                      <p>{product.description}</p>
+                      <p>{product.suggestedPrice}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div id="companies">
+                <h3>Companies</h3>
+                <ul id="companieList">
+                  {companies.map(company => (
+                    <li key={company.id}>
+                      <h5>{company.name}</h5>
+                      <p>{company.catchPhrase}</p>
+                      <p>{company.state}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </main>
           )
         }
       }
