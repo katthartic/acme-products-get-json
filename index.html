@@ -1,5 +1,31 @@
 <html>
   <head>
+    <style>
+      * {
+        box-sizing: border-box;
+        font-family: sans-serif;
+      }
+
+      ul {
+        display: flex;
+        list-style: none;
+        flex-wrap: wrap;
+      }
+
+      li {
+        margin: 1rem;
+        padding: 1rem;
+        border-radius: 4px;
+        width: 25%;
+        text-align: center;
+        background-color: rgb(17, 133, 129);
+        color: white;
+      }
+
+      p {
+        font-size: 0.5rem;
+      }
+    </style>
     <script
       src="https://unpkg.com/react@16/umd/react.development.js"
       crossorigin
@@ -12,10 +38,47 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.js"></script>
   </head>
   <body>
-    <h1>My React App</h1>
+    <h1>Acme Express w / JSON</h1>
     <div id="root"></div>
     <script type="text/babel">
-      ReactDOM.render(<hr />, document.querySelector('#root'))
+      class App extends React.Component {
+        constructor() {
+          super()
+          this.state = {
+            products: [],
+            err: ''
+          }
+        }
+
+        async componentDidMount() {
+          try {
+            const products = (await axios.get('/api/products')).data
+            this.setState({ products })
+          } catch (ex) {
+            const err = ex.response.data.message
+            console.log(ex)
+            this.setState({ err })
+          }
+        }
+
+        render() {
+          console.log('render', this.state)
+          const { products } = this.state
+          return (
+            <ul>
+              {products.map(product => (
+                <li key={product.id}>
+                  <h5>{product.name}</h5>
+                  <p>{product.description}</p>
+                  <p>{product.suggestedPrice}</p>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      }
+
+      ReactDOM.render(<App />, document.querySelector('#root'))
     </script>
   </body>
 </html>
